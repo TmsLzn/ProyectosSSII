@@ -68,12 +68,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 try:
                     # Recibir opción de registro o login
                     datos = conn.recv(1024).decode('utf-8').split(',')
-                    #print(f"Datos recibidos: {datos}")  # Imprimir los datos recibidos
+                    print(f"Datos recibidos: {datos}")  # Imprimir los datos recibidos
 
                     # Validar que se reciban suficientes datos
                     if len(datos) < 3:  # Asegúrate de que haya al menos 3 elementos (tipo, usuario, contraseña)
-                        #print("Error: datos insuficientes recibidos.")
-                        #conn.sendall('Error: datos insuficientes'.encode('utf-8'))
+                        print("Error: datos insuficientes recibidos.")
+                        conn.sendall('Error: datos insuficientes'.encode('utf-8'))
                         continue
 
                     if datos[0] == "registro":
