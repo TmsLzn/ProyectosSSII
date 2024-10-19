@@ -3,8 +3,8 @@ import java.io.*;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Scanner;
-import javax.crypto.Mac; // Para HMAC
-import javax.crypto.spec.SecretKeySpec; // Para crear la clave HMAC
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class cliente {
 
@@ -12,6 +12,25 @@ public class cliente {
 
     public static void main(String[] args) {
         try {
+            String username, password, userMessage;
+
+            // Si no se proporcionan argumentos, pedir los datos manualmente
+            if (args.length < 3) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("Introduce tu username: ");
+                username = scanner.nextLine();
+                System.out.print("Introduce tu contraseña: ");
+                password = scanner.nextLine();
+                System.out.print("Introduce tu mensaje: ");
+                userMessage = scanner.nextLine();
+                scanner.close();
+            } else {
+                // Obtener username, password y mensaje de los argumentos
+                username = args[0];
+                password = args[1];
+                userMessage = args[2];
+            }
+
             // Crear conexión SSL
             SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 3343);
@@ -19,15 +38,6 @@ public class cliente {
             // Crear flujos de entrada y salida
             PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            // Crear un scanner para leer entrada del usuario
-            Scanner scanner = new Scanner(System.in);
-
-            // Solicitar username y contraseña
-            System.out.print("Introduce tu username: ");
-            String username = scanner.nextLine();
-            System.out.print("Introduce tu contraseña: ");
-            String password = scanner.nextLine();
 
             // Generar un nonce aleatorio
             String nonce = generateNonce();
@@ -41,10 +51,6 @@ public class cliente {
             output.println(password);
             output.println(nonce);
             output.println(hmac);
-
-            // Solicitar mensaje para enviar al servidor
-            System.out.print("Introduce tu mensaje: ");
-            String userMessage = scanner.nextLine();
             output.println(userMessage); // Enviar mensaje al servidor
             output.flush();
 
@@ -56,7 +62,6 @@ public class cliente {
             output.close();
             input.close();
             socket.close();
-            scanner.close();
 
         } catch (Exception e) {
             e.printStackTrace();
